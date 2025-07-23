@@ -64,9 +64,29 @@ static CGFloat kQuickHeaderItemWidth = 40;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+//    _tableView.style
+    
     [self.tableView registerClass:UITableViewCell.class forCellReuseIdentifier:kContactCellIdentifier];
     [self.view addSubview:self.tableView];
     
+    
+//    _tableView.tableHeaderView
+//    headerview  UITableViewHeaderFooterView
+//    
+//    contentSize
+//    contentInset   contentOffset
+//    
+//    下拉刷新。 上拉加载更多
+//    
+//    局部刷新
+//    
+//    reloadData
+//    
+//    reloadSection  reload  in range
+//    
+//    
+//    视图层级。 section。row。list
+//    
     CGFloat x = self.tableView.bounds.size.width - kQuickHeaderItemWidth;
     NSArray *headerArr = self.itemModels.sectionHeaderArr;
     NSInteger headerCount = headerArr.count;
@@ -114,12 +134,32 @@ static CGFloat kQuickHeaderItemWidth = 40;
 }
 
 #pragma mark -Delegate && DataSource
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+}
+
+//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+//    
+//}
+
+
+
 - (nonnull UITableViewCell *)tableView:(nonnull UITableView *)tableView cellForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
     // 获取当前所需数据
     NSString *itemModel = self.sectionArr[indexPath.section][indexPath.row];
     // cell复用
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kContactCellIdentifier forIndexPath:indexPath];
     // 不想自定义Cell，选择用tag来标识contentView子视图是否有绑定的label
+//    for (UIView *subView in cell.contentView) {
+//        [subView removeFromSuperview];
+//    }
+//    [cell.contentView ]
+//    cell.selectionStyle = 
     UILabel *textLabel = [cell.contentView viewWithTag:100];
     if (!textLabel) {
         CGFloat width = cell.contentView.bounds.size.width;
@@ -158,6 +198,7 @@ static CGFloat kQuickHeaderItemWidth = 40;
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     // 每行默认启用删除样式
+    // TODO: 先改数据
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         if (self.sectionArr[indexPath.section].count == 1) {
             [self showAlertWithTitle:@"警告" msg:@"无法删除所有数据。至少需要保留一个分组。"];

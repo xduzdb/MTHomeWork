@@ -8,15 +8,19 @@
 #import "ViewController.h"
 #import "ContactViewController.h"
 #import "MTSearchViewController.h"
+#import "TestTableViewController.h"
 
 static NSString *kContactTitle = @"跳转联系人列表";
 static NSString *kSearchTitle = @"跳转搜索结果页列表";
+static NSString *kTestTableTitle = @"UITableView Cell高度测试";
 
 @interface ViewController ()
 // 联系人TableView
 @property (nonatomic, strong) UIButton *contactButton;
 // MTSearch的CollectionView
 @property (nonatomic, strong) UIButton *MTSearchButton;
+// UITableView测试按钮
+@property (nonatomic, strong) UIButton *testTableButton;
 
 @end
 
@@ -45,17 +49,25 @@ static NSString *kSearchTitle = @"跳转搜索结果页列表";
     self.MTSearchButton.titleLabel.textColor = [UIColor whiteColor];
     [self.MTSearchButton addTarget:self action:@selector(jumpToSearchView) forControlEvents:UIControlEventTouchUpInside];
     
+    self.testTableButton = [[UIButton alloc] init];
+    self.testTableButton.backgroundColor = [UIColor blueColor];
+    [self.testTableButton setTitle:kTestTableTitle forState: UIControlStateNormal];
+    self.testTableButton.titleLabel.textColor = [UIColor whiteColor];
+    [self.testTableButton addTarget:self action:@selector(jumpToTestTableView) forControlEvents:UIControlEventTouchUpInside];
+    
     [self.view addSubview:self.contactButton];
     [self.view addSubview:self.MTSearchButton];
+    [self.view addSubview:self.testTableButton];
 }
 
 - (void)setLayout {
     self.contactButton.translatesAutoresizingMaskIntoConstraints = NO;
     self.MTSearchButton.translatesAutoresizingMaskIntoConstraints = NO;
+    self.testTableButton.translatesAutoresizingMaskIntoConstraints = NO;
     
     [NSLayoutConstraint activateConstraints:@[
         // contactButton 约束
-        [self.contactButton.centerYAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerYAnchor constant:-100],
+        [self.contactButton.centerYAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerYAnchor constant:-150],
         [self.contactButton.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:100],
         [self.contactButton.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-100],
         [self.contactButton.heightAnchor constraintEqualToConstant:100],
@@ -65,6 +77,12 @@ static NSString *kSearchTitle = @"跳转搜索结果页列表";
         [self.MTSearchButton.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:100],
         [self.MTSearchButton.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-100],
         [self.MTSearchButton.heightAnchor constraintEqualToConstant:100],
+        
+        // testTableButton 约束
+        [self.testTableButton.topAnchor constraintEqualToAnchor:self.MTSearchButton.bottomAnchor constant:20],
+        [self.testTableButton.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:100],
+        [self.testTableButton.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-100],
+        [self.testTableButton.heightAnchor constraintEqualToConstant:100],
     ]];
 }
 
@@ -75,6 +93,11 @@ static NSString *kSearchTitle = @"跳转搜索结果页列表";
 
 - (void)jumpToSearchView {
     MTSearchViewController *vc = [[MTSearchViewController alloc] init];
+    [self.navigationController pushViewController:vc animated:true];
+}
+
+- (void)jumpToTestTableView {
+    TestTableViewController *vc = [[TestTableViewController alloc] init];
     [self.navigationController pushViewController:vc animated:true];
 }
 

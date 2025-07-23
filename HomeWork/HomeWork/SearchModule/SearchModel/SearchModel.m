@@ -9,17 +9,30 @@
 
 @interface SearchModel ()
 
-@property (nonatomic, strong) NSString *title;
-@property (nonatomic, strong) NSString *backgroundColor;
-@property (nonatomic, assign) BOOL isStick;
-@property (nonatomic, assign) BOOL isSuperStick;
-@property (nonatomic, assign) CGFloat height;
-@property (nonatomic, assign) MTItemLayoutType type;
-@property (nonatomic, strong, nullable) id data;
-
 @end
 
 @implementation SearchModel
+
+- (instancetype)initWithTitle:(NSString *)title
+              backgroundColor:(UIColor *)backgroundColor
+                      isStick:(BOOL)isStick
+                 isSuperStick:(BOOL)isSuperStick
+                       height:(CGFloat)height
+                         type:(MTItemLayoutType)type
+                         data:(nullable id)data
+{
+    self = [super init];
+    if (self) {
+        _title = title;
+        _backgroundColor = backgroundColor;
+        _isSticky = isStick;
+        _isSuperSticky = isSuperStick;
+        _height = height;
+        _type = type;
+        _data = data;
+    }
+    return self;
+}
 
 
 @end
