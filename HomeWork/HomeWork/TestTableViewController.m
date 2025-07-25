@@ -7,6 +7,8 @@
 
 #import "TestTableViewController.h"
 
+static NSString *kReuseIdentier = @"TestCell";
+
 @interface TestTableViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UITableView *tableView;
@@ -29,17 +31,13 @@
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     self.safeAreaHeight = self.view.safeAreaLayoutGuide.layoutFrame.size.height;
-    self.cellHeight = 93;
+    self.cellHeight = 50;
     
     [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSLog(@"创建的cell总数: %ld", (long)self.createdCellCount);
-    });
 }
 
 - (void)setupData {
@@ -47,7 +45,7 @@
     self.createdCellCount = 0;
     
     for (int i = 0; i < 20; i++) {
-        [self.dataArray addObject:[NSString stringWithFormat:@"Cell %d", i + 1]];
+        [self.dataArray addObject:[NSString stringWithFormat:@"Cell %d", i]];
     }
 }
 
@@ -62,8 +60,6 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     self.tableView.separatorColor = [UIColor redColor];
     self.tableView.separatorInset = UIEdgeInsetsZero;
-    
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"TestCell"];
     
     [self.view addSubview:self.tableView];
 }
@@ -86,11 +82,12 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *cellIdentifier = @"TestCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
-    
-    self.createdCellCount++;
-    NSLog(@"创建了第 %ld 个cell, 地址: %p", (long)self.createdCellCount, cell);
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kReuseIdentier];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:kReuseIdentier];
+        NSLog(@"创建了第 %ld 个cell, 地址: %p", (long)self.createdCellCount, cell);
+        self.createdCellCount++;
+    }
     
     cell.textLabel.text = self.dataArray[indexPath.row];
     cell.backgroundColor = [UIColor lightGrayColor];
@@ -106,12 +103,8 @@
     return self.cellHeight;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
-    NSLog(@"当前总共创建了 %ld 个cell", (long)self.createdCellCount);
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"willDisplay: %ld", (long)indexPath.row);
 }
 
-
-
-@end 
+@end
