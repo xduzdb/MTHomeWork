@@ -6,7 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8841D2912E3B98A3008F9D4D /* MNISTClassifier.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = 8841D2902E3B98A3008F9D4D /* MNISTClassifier.mlpackage */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		8841D2902E3B98A3008F9D4D /* MNISTClassifier.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = MNISTClassifier.mlpackage; sourceTree = "<group>"; };
 		88E652802E0C24F10067CF72 /* HomeWork.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HomeWork.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -45,6 +50,7 @@
 		88E652772E0C24F10067CF72 = {
 			isa = PBXGroup;
 			children = (
+				8841D2902E3B98A3008F9D4D /* MNISTClassifier.mlpackage */,
 				88E652822E0C24F10067CF72 /* HomeWork */,
 				88E652812E0C24F10067CF72 /* Products */,
 			);
@@ -121,6 +127,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8841D2912E3B98A3008F9D4D /* MNISTClassifier.mlpackage in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
