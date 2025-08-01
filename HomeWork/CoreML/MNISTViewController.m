@@ -74,7 +74,7 @@
 
 @end
 
-@interface MNISTViewController ()
+@interface MNISTViewController () 
 
 @property (nonatomic, strong) DrawingView *drawingView;
 @property (nonatomic, strong) UILabel *titleLabel;

@@ -11,12 +11,14 @@
 #import "TestTableViewController.h"
 #import "AnimationViewController.h"
 #import "MNISTViewController.h"
+#import "AttachmentViewController.h"
 
 static NSString *kContactTitle = @"跳转联系人列表";
 static NSString *kSearchTitle = @"跳转搜索结果页列表";
 static NSString *kTestTableTitle = @"UITableView复用";
 static NSString *kAnimationTitle = @"UIView动画演示";
 static NSString *kMNISTTitle = @"手写数字识别";
+static NSString *kAttachmentTitle = @"UIDynamic吸附动画";
 
 @interface ViewController ()
 
@@ -55,7 +57,7 @@ static NSString *kMNISTTitle = @"手写数字识别";
 #pragma mark - UICollectionViewDataSource
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return 5; // 修改为剩余的按钮数量
+    return 6; // 修改为剩余的按钮数量
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -112,6 +114,11 @@ static NSString *kMNISTTitle = @"手写数字识别";
             color = [UIColor systemCyanColor];
             action = @selector(jumpToMNISTView);
             break;
+        case 5:
+            title = kAttachmentTitle;
+            color = [UIColor systemOrangeColor];
+            action = @selector(jumpToAttachmentView);
+            break;
     }
     
     [button setTitle:title forState:UIControlStateNormal];
@@ -166,6 +173,11 @@ static NSString *kMNISTTitle = @"手写数字识别";
 
 - (void)jumpToMNISTView {
     MNISTViewController *vc = [[MNISTViewController alloc] init];
+    [self.navigationController pushViewController:vc animated:true];
+}
+
+- (void)jumpToAttachmentView {
+    AttachmentViewController *vc = [[AttachmentViewController alloc] init];
     [self.navigationController pushViewController:vc animated:true];
 }
 
