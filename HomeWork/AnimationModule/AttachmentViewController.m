@@ -144,24 +144,55 @@
 }
 
 - (void)panAction:(UIPanGestureRecognizer *)pan {
-    CGPoint point = [pan translationInView:pan.view];
     CGFloat height = CGRectGetHeight(self.view.frame);
     
-    if (!((pan.view.center.y + point.y) > height/2 - pan.view.frame.size.height/2)) {
-        pan.view.center = CGPointMake(pan.view.center.x, pan.view.center.y + point.y);
-        [pan setTranslation:CGPointZero inView:pan.view];
+    switch (pan.state) {
+        case UIGestureRecognizerStateBegan: {
+            // 开始拖动时，确保先移除所有现有的重力行为
+            [self.dynamicAnimator removeBehavior:self.boardGravityBehavior];
+            // 重置视图状态
+            [self.dynamicAnimator updateItemUsingCurrentState:pan.view];
+            break;
+        }
+            
+        case UIGestureRecognizerStateChanged: {
+            CGPoint translation = [pan translationInView:self.view];
+            CGPoint center = pan.view.center;
+            
+            // 限制垂直移动范围
+            CGFloat newY = center.y + translation.y;
+            CGFloat maxY = height/2 - pan.view.frame.size.height/2;
+            CGFloat minY = 0;  // 添加最小值限制
+            
+            // 确保在有效范围内
+            newY = MAX(minY, MIN(newY, maxY));
+            center.y = newY;
+            pan.view.center = center;
+            
+            [pan setTranslation:CGPointZero inView:self.view];
+            
+            // 实时更新动力学状态
+            [self.dynamicAnimator updateItemUsingCurrentState:pan.view];
+            break;
+        }
+            
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed: {
+            // 先移除可能存在的重力行为
+            [self.dynamicAnimator removeBehavior:self.boardGravityBehavior];
+            
+            // 确保视图状态是最新的
+            [self.dynamicAnimator updateItemUsingCurrentState:pan.view];
+            
+            // 添加新的重力行为
+            [self.dynamicAnimator addBehavior:self.boardGravityBehavior];
+            break;
+        }
+            
+        default:
+            break;
     }
-    
-    if (pan.state == UIGestureRecognizerStateBegan) {
-        [self.dynamicAnimator removeBehavior:self.boardGravityBehavior];
-    }
-    if (pan.state == UIGestureRecognizerStateEnded || 
-        pan.state == UIGestureRecognizerStateCancelled || 
-        pan.state == UIGestureRecognizerStateFailed) {
-        [self.dynamicAnimator addBehavior:self.boardGravityBehavior];
-    }
-    
-    [self.dynamicAnimator updateItemUsingCurrentState:pan.view];
 }
 
 - (void)switchButtonTapped {

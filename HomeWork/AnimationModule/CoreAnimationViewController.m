@@ -9,6 +9,8 @@
 @property (nonatomic, strong) CAShapeLayer *shapeLayer;
 @property (nonatomic, strong) CADisplayLink *displayLink;
 @property (nonatomic, assign) CGPoint originalBoardCenter;
+@property (nonatomic, strong) CASpringAnimation *springAnimation;
+@property (nonatomic, assign) CGFloat springVelocity;
 
 @end
 
@@ -83,19 +85,32 @@
     [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
 }
 
+- (void)updateAttachedViews {
+    // 计算各个视图之间的间距
+    CGFloat totalDistance = self.ballView.center.y - self.boardView.center.y;
+    CGFloat segment = totalDistance / 3;  // 将总距离分成三段
+    
+    // 更新上控制点位置
+    self.upView.center = CGPointMake(self.boardView.center.x, 
+                                   self.boardView.center.y + segment);
+    
+    // 更新下控制点位置
+    self.downView.center = CGPointMake(self.boardView.center.x,
+                                     self.boardView.center.y + segment * 2);
+    
+    // 更新小球位置
+    self.ballView.center = CGPointMake(self.boardView.center.x,
+                                     self.boardView.center.y + segment * 3);
+}
+
 - (void)updatePath {
-    // 更新控制点位置
-    CGFloat progress = (self.boardView.center.y - self.originalBoardCenter.y) / 50.0; // 可以调整这个系数
-    
-    self.upView.center = CGPointMake(self.upView.center.x, 
-                                    self.originalBoardCenter.y + (self.ballView.center.y - self.originalBoardCenter.y) / 4 + progress * 10);
-    
-    self.downView.center = CGPointMake(self.downView.center.x, 
-                                      self.ballView.center.y - (self.ballView.center.y - self.originalBoardCenter.y) / 4 + progress * 5);
+    [self updateAttachedViews];
     
     // 更新贝塞尔曲线
     UIBezierPath *path = [UIBezierPath bezierPath];
     [path moveToPoint:self.boardView.center];
+    
+    // 使用三次贝塞尔曲线创建更自然的弧度
     [path addCurveToPoint:self.ballView.center 
             controlPoint1:self.upView.center 
             controlPoint2:self.downView.center];
@@ -104,25 +119,45 @@
 }
 
 - (void)panAction:(UIPanGestureRecognizer *)pan {
-    CGPoint point = [pan translationInView:pan.view];
     CGFloat height = CGRectGetHeight(self.view.frame);
     
-    if (!((pan.view.center.y + point.y) > height/2 - pan.view.frame.size.height/2)) {
-        pan.view.center = CGPointMake(pan.view.center.x, pan.view.center.y + point.y);
-        [pan setTranslation:CGPointZero inView:pan.view];
-    }
-    
-    if (pan.state == UIGestureRecognizerStateEnded || 
-        pan.state == UIGestureRecognizerStateCancelled || 
-        pan.state == UIGestureRecognizerStateFailed) {
-        [UIView animateWithDuration:0.5 
-                              delay:0 
-             usingSpringWithDamping:0.5 
-              initialSpringVelocity:0.5 
-                            options:UIViewAnimationOptionCurveEaseInOut 
-                         animations:^{
+    switch (pan.state) {
+        case UIGestureRecognizerStateBegan: {
+            break;
+        }
+            
+        case UIGestureRecognizerStateChanged: {
+            CGPoint translation = [pan translationInView:self.view];
+            CGPoint velocity = [pan velocityInView:self.view];
+            self.springVelocity = velocity.y;
+            
+            CGPoint center = pan.view.center;
+            
+            // 限制垂直移动范围
+            CGFloat newY = center.y + translation.y;
+            CGFloat maxY = height/2 - pan.view.frame.size.height/2;
+            CGFloat minY = 0;
+            
+            newY = MAX(minY, MIN(newY, maxY));
+            center.y = newY;
+            pan.view.center = center;
+            
+            // 更新所有吸附视图的位置
+            [self updateAttachedViews];
+            
+            [pan setTranslation:CGPointZero inView:self.view];
+            break;
+        }
+            
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed: {
             self.boardView.center = self.originalBoardCenter;
-        } completion:nil];
+            break;
+        }
+            
+        default:
+            break;
     }
 }
 
