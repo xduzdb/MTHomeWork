@@ -90,6 +90,20 @@
 
 @implementation MNISTViewController
 
++ (void)initialize {
+    if (self == [MNISTViewController class]) {
+        [self registerNavigationClass];
+    }
+}
+
++ (NSString *)navigationTitle {
+    return @"手写数字识别";
+}
+
++ (UIColor *)navigationColor {
+    return [UIColor systemCyanColor];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupUI];

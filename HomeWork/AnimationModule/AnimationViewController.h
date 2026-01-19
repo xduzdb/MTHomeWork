@@ -6,7 +6,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BaseViewController.h"
 
-@interface AnimationViewController : UIViewController
+@interface AnimationViewController : BaseViewController
 
 @end 

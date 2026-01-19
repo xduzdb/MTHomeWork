@@ -32,7 +32,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "212"
             endingLineNumber = "212"
-            landmarkName = "-loadModel"
+            landmarkName = "-setupLayout"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

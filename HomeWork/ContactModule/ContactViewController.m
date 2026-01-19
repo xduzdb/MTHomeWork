@@ -26,6 +26,20 @@ static CGFloat kQuickHeaderItemWidth = 40;
 
 @implementation ContactViewController
 
++ (void)initialize {
+    if (self == [ContactViewController class]) {
+        [self registerNavigationClass];
+    }
+}
+
++ (NSString *)navigationTitle {
+    return @"跳转联系人列表";
+}
+
++ (UIColor *)navigationColor {
+    return [UIColor systemBlueColor];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setModel];
@@ -64,29 +78,10 @@ static CGFloat kQuickHeaderItemWidth = 40;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-//    _tableView.style
-    
+
     [self.tableView registerClass:UITableViewCell.class forCellReuseIdentifier:kContactCellIdentifier];
     [self.view addSubview:self.tableView];
-    
-    
-//    _tableView.tableHeaderView
-//    headerview  UITableViewHeaderFooterView
-//    
-//    contentSize
-//    contentInset   contentOffset
-//    
-//    下拉刷新。 上拉加载更多
-//    
-//    局部刷新
-//    
-//    reloadData
-//    
-//    reloadSection  reload  in range
-//    
-//    
-//    视图层级。 section。row。list
-//    
+
     CGFloat x = self.tableView.bounds.size.width - kQuickHeaderItemWidth;
     NSArray *headerArr = self.itemModels.sectionHeaderArr;
     NSInteger headerCount = headerArr.count;

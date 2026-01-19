@@ -21,6 +21,20 @@ static NSString *kReuseIdentier = @"TestCell";
 
 @implementation TestTableViewController
 
++ (void)initialize {
+    if (self == [TestTableViewController class]) {
+        [self registerNavigationClass];
+    }
+}
+
++ (NSString *)navigationTitle {
+    return @"UITableView复用";
+}
+
++ (UIColor *)navigationColor {
+    return [UIColor systemPurpleColor];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupData];

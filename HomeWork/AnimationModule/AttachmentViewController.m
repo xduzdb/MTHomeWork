@@ -16,6 +16,20 @@
 
 @implementation AttachmentViewController
 
++ (void)initialize {
+    if (self == [AttachmentViewController class]) {
+        [self registerNavigationClass];
+    }
+}
+
++ (NSString *)navigationTitle {
+    return @"UIDynamic吸附动画";
+}
+
++ (UIColor *)navigationColor {
+    return [UIColor systemOrangeColor];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupUI];

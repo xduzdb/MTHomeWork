@@ -20,6 +20,20 @@ static CGFloat const kMinimumInteritemSpacing = 16.f;
 
 @implementation MTSearchViewController
 
++ (void)initialize {
+    if (self == [MTSearchViewController class]) {
+        [self registerNavigationClass];
+    }
+}
+
++ (NSString *)navigationTitle {
+    return @"跳转搜索结果页列表";
+}
+
++ (UIColor *)navigationColor {
+    return [UIColor systemIndigoColor];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = UIColor.whiteColor;

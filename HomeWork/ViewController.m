@@ -6,23 +6,13 @@
 //
 
 #import "ViewController.h"
-#import "ContactViewController.h"
-#import "MTSearchViewController.h"
-#import "TestTableViewController.h"
-#import "AnimationViewController.h"
-#import "MNISTViewController.h"
-#import "AttachmentViewController.h"
-
-static NSString *kContactTitle = @"跳转联系人列表";
-static NSString *kSearchTitle = @"跳转搜索结果页列表";
-static NSString *kTestTableTitle = @"UITableView复用";
-static NSString *kAnimationTitle = @"UIView动画演示";
-static NSString *kMNISTTitle = @"手写数字识别";
-static NSString *kAttachmentTitle = @"UIDynamic吸附动画";
+#import "MTNavigationProtocol.h"
+#import "BaseViewController.h"
 
 @interface ViewController ()
 
 @property (nonatomic, strong) UICollectionView *collectionView;
+@property (nonatomic, strong) NSArray<Class> *navigationClasses;
 
 @end
 
@@ -30,6 +20,8 @@ static NSString *kAttachmentTitle = @"UIDynamic吸附动画";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    // 从 BaseViewController 获取所有已注册的导航类
+    self.navigationClasses = [BaseViewController allNavigationClasses];
     [self setUI];
 }
 
@@ -57,7 +49,7 @@ static NSString *kAttachmentTitle = @"UIDynamic吸附动画";
 #pragma mark - UICollectionViewDataSource
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return 6; // 修改为剩余的按钮数量
+    return self.navigationClasses.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -84,46 +76,22 @@ static NSString *kAttachmentTitle = @"UIDynamic吸附动画";
     [button addTarget:self action:@selector(buttonTouchDown:) forControlEvents:UIControlEventTouchDown];
     [button addTarget:self action:@selector(buttonTouchUp:) forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside];
     
-    NSString *title;
-    UIColor *color;
-    SEL action;
+    // 从协议方法获取信息
+    Class viewControllerClass = self.navigationClasses[indexPath.item];
+    NSString *title = @"";
+    UIColor *color = [UIColor systemGrayColor];
     
-    switch (indexPath.item) {
-        case 0:
-            title = kContactTitle;
-            color = [UIColor systemBlueColor];
-            action = @selector(jumpToContactView);
-            break;
-        case 1:
-            title = kSearchTitle;
-            color = [UIColor systemIndigoColor];
-            action = @selector(jumpToSearchView);
-            break;
-        case 2:
-            title = kTestTableTitle;
-            color = [UIColor systemPurpleColor];
-            action = @selector(jumpToTestTableView);
-            break;
-        case 3:
-            title = kAnimationTitle;
-            color = [UIColor systemPinkColor];
-            action = @selector(jumpToAnimationView);
-            break;
-        case 4:
-            title = kMNISTTitle;
-            color = [UIColor systemCyanColor];
-            action = @selector(jumpToMNISTView);
-            break;
-        case 5:
-            title = kAttachmentTitle;
-            color = [UIColor systemOrangeColor];
-            action = @selector(jumpToAttachmentView);
-            break;
+    if ([viewControllerClass respondsToSelector:@selector(navigationTitle)]) {
+        title = [viewControllerClass navigationTitle];
+    }
+    if ([viewControllerClass respondsToSelector:@selector(navigationColor)]) {
+        color = [viewControllerClass navigationColor];
     }
     
     [button setTitle:title forState:UIControlStateNormal];
     button.backgroundColor = color;
-    [button addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];
+    button.tag = indexPath.item; // 使用 tag 存储索引
+    [button addTarget:self action:@selector(navigateToViewController:) forControlEvents:UIControlEventTouchUpInside];
     
     [cell.contentView addSubview:button];
     return cell;
@@ -151,34 +119,25 @@ static NSString *kAttachmentTitle = @"UIDynamic吸附动画";
     } completion:nil];
 }
 
-- (void)jumpToContactView {
-    ContactViewController *vc = [[ContactViewController alloc] init];
-    [self.navigationController pushViewController:vc animated:true];
-}
-
-- (void)jumpToSearchView {
-    MTSearchViewController *vc = [[MTSearchViewController alloc] init];
-    [self.navigationController pushViewController:vc animated:true];
-}
-
-- (void)jumpToTestTableView {
-    TestTableViewController *vc = [[TestTableViewController alloc] init];
-    [self.navigationController pushViewController:vc animated:true];
-}
-
-- (void)jumpToAnimationView {
-    AnimationViewController *vc = [[AnimationViewController alloc] init];
-    [self.navigationController pushViewController:vc animated:true];
-}
-
-- (void)jumpToMNISTView {
-    MNISTViewController *vc = [[MNISTViewController alloc] init];
-    [self.navigationController pushViewController:vc animated:true];
-}
-
-- (void)jumpToAttachmentView {
-    AttachmentViewController *vc = [[AttachmentViewController alloc] init];
-    [self.navigationController pushViewController:vc animated:true];
+- (void)navigateToViewController:(UIButton *)button {
+    NSInteger index = button.tag;
+    if (index < 0 || index >= self.navigationClasses.count) {
+        return;
+    }
+    
+    Class viewControllerClass = self.navigationClasses[index];
+    
+    // 使用 respondsToSelector 检查是否实现了协议方法
+    if ([viewControllerClass respondsToSelector:@selector(navigationInstance)]) {
+        // 使用 performSelector 并转换为正确的类型
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        UIViewController *viewController = [viewControllerClass performSelector:@selector(navigationInstance)];
+        #pragma clang diagnostic pop
+        if (viewController) {
+            [self.navigationController pushViewController:viewController animated:YES];
+        }
+    }
 }
 
 @end

@@ -25,6 +25,20 @@
 
 @implementation AnimationViewController
 
++ (void)initialize {
+    if (self == [AnimationViewController class]) {
+        [self registerNavigationClass];
+    }
+}
+
++ (NSString *)navigationTitle {
+    return @"UIView动画演示";
+}
+
++ (UIColor *)navigationColor {
+    return [UIColor systemPinkColor];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupUI];
@@ -243,18 +257,25 @@
 - (void)basicMoveAnimation {
     self.isAnimating = YES;
     
-    [UIView animateWithDuration:1.0 
-                          delay:0 
-                        options:UIViewAnimationOptionCurveEaseInOut 
+    [UIView animateWithDuration:1.0
+                          delay:0
+                        options:UIViewAnimationOptionAutoreverse
                      animations:^{
         // 在限制区域内移动
-        self.demoView.transform = CGAffineTransformMakeTranslation(60, 0);
+        self.demoView.transform = CGAffineTransformMakeTranslation(100, 0);
     } completion:^(BOOL finished) {
-        [UIView animateWithDuration:1.0 animations:^{
+        [UIView animateWithDuration:1.0
+                              delay:0
+                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseInOut
+                         animations:^{
+            self.demoView.alpha = 0.1;
+        }
+                         completion:^(BOOL finished) {
+            self.demoView.alpha = 1;
             self.demoView.transform = CGAffineTransformIdentity;
-        } completion:^(BOOL finished) {
             self.isAnimating = NO;
         }];
+        self.isAnimating = NO;
     }];
 }
 
@@ -319,7 +340,13 @@
         // 在限制区域内弹跳
         self.demoView.transform = CGAffineTransformMakeTranslation(0, 60);
     } completion:^(BOOL finished) {
-        [UIView animateWithDuration:1.0 animations:^{
+        
+        [UIView animateWithDuration:2.0
+                              delay:0
+             usingSpringWithDamping:0.9
+              initialSpringVelocity:0.1
+                            options:UIViewAnimationOptionCurveEaseInOut
+                         animations:^{
             self.demoView.transform = CGAffineTransformIdentity;
         } completion:^(BOOL finished) {
             self.isAnimating = NO;

@@ -7,10 +7,11 @@
 
 #import <UIKit/UIKit.h>
 #import "MTSearchMixLayout.h"
+#import "BaseViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MTSearchViewController : UIViewController<MTSearchMixLayoutDelegate, UICollectionViewDelegate, UICollectionViewDataSource>
+@interface MTSearchViewController : BaseViewController<MTSearchMixLayoutDelegate, UICollectionViewDelegate, UICollectionViewDataSource>
 
 - (SearchModel *)itemModelForLayoutWithIndexPath:(NSIndexPath *)indexPath;
 
